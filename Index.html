@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style id="pageSize">@page { size: A4 portrait; margin: 12mm; }</style>
+  <style>
+    :root{
+      --primary:#2f6f62; --primary-d:#24574d; --primary-l:#e3efec;
+      --blue:#2f5f8a; --blue-l:#e4edf6; --gray:#5f6b68; --gray-l:#eceeed;
+      --bg:#f4f6f5; --card:#ffffff; --line:#dde3e0; --text:#1f2a27; --muted:#66736f;
+      --ok:#1e7a46; --ok-bg:#e6f4ec; --err:#b42318; --err-bg:#fdecea;
+      --low:#b42318; --low-bg:#fde2e0; --late:#8a5300; --late-bg:#fff1d6;
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none !important}
+    body{margin:0;font-family:'Tajawal',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:17px;line-height:1.6}
+    .app-header{background:var(--primary);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .app-header h1{margin:0;font-size:21px;font-weight:800}
+    .sheet-link{color:#fff;font-size:14px;opacity:.9}
+    main{max-width:1150px;margin:0 auto;padding:16px 16px 130px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+    label{display:block;font-weight:700;margin-bottom:6px;font-size:15px;color:var(--muted)}
+    select{width:100%;min-height:50px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font:inherit;background:#fff;color:var(--text)}
+    select:focus,input:focus,button:focus-visible{outline:3px solid var(--primary-l);border-color:var(--primary)}
+    .grid2{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+    @media (max-width:720px){.grid2{grid-template-columns:1fr}}
+    .btn{min-height:50px;padding:0 22px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:700;cursor:pointer;color:var(--text)}
+    .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .btn.primary:hover{background:var(--primary-d)}
+    .btn.small{min-height:42px;padding:0 14px;font-size:15px}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .row-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .muted{color:var(--muted);font-size:15px}
+    .hint{background:var(--primary-l);border-radius:10px;padding:10px 14px;font-size:15px;margin:12px 0}
+    .warn-box{background:var(--late-bg);color:var(--late);border:1px solid #f0d49a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:15px}
+    .warn-box ul{margin:6px 0 0;padding-right:20px}
+    .empty{text-align:center;color:var(--muted);padding:30px 10px}
+
+    /* ===== الصفحة الأولى: الصفوف ===== */
+    .home-title{font-size:20px;font-weight:800;margin:6px 0 14px}
+    .grade-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start}
+    @media (max-width:720px){.grade-grid{grid-template-columns:1fr}}
+    .grade-card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;--c:var(--primary);--cl:var(--primary-l)}
+    .grade-card.c1{--c:var(--blue);--cl:var(--blue-l)}
+    .grade-card.other{--c:var(--gray);--cl:var(--gray-l)}
+    .grade-card.open{border-color:var(--c)}
+    .grade-btn{width:100%;display:flex;align-items:center;gap:16px;padding:20px;border:none;background:#fff;font:inherit;cursor:pointer;text-align:right;color:var(--text)}
+    .grade-icon{width:64px;height:64px;flex:none;border-radius:16px;background:var(--cl);color:var(--c);display:grid;place-items:center}
+    .grade-name{display:block;font-size:21px;font-weight:800}
+    .grade-sub{display:block;color:var(--muted);font-size:15px}
+    .chev{margin-right:auto;color:var(--c);transition:transform .2s}
+    .grade-card.open .chev{transform:rotate(180deg)}
+    .sections{display:grid;gap:10px;padding:0 18px 18px}
+    .section-btn{min-height:58px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font:inherit;font-weight:700;font-size:19px;display:flex;justify-content:space-between;align-items:center;padding:0 18px;cursor:pointer;color:var(--text)}
+    .section-btn:hover{border-color:var(--c);background:var(--cl)}
+    .section-btn span:last-child{color:var(--c);font-size:22px}
+
+    /* ===== صفحة الفصل ===== */
+    .classbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line)}
+    .crumb{font-size:15px;color:var(--muted)}
+    .crumb strong{display:block;font-size:20px;color:var(--text);line-height:1.3}
+    .tabs{display:flex;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+    .tab{flex:1;min-height:50px;border:1px solid var(--line);background:#fff;border-radius:12px;font:inherit;font-weight:700;color:var(--muted);cursor:pointer}
+    .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+    /* ===== شاشة الرصد ===== */
+    .rasd-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .rasd-head strong{font-size:19px}
+    .slist{border-top:1px solid var(--line)}
+    .srow{display:grid;grid-template-columns:34px 1fr 96px 46px;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--line)}
+    .srow.changed{background:#f2f8f6;border-right:4px solid var(--primary)}
+    .srow.invalid{background:var(--err-bg);border-right:4px solid var(--err)}
+    .snum{color:var(--muted);font-size:14px;text-align:center}
+    .sname{font-weight:500}
+    .grade{width:100%;min-height:50px;border:1px solid var(--line);border-radius:10px;text-align:center;font:inherit;font-size:20px;font-weight:700;direction:ltr}
+    .srow.invalid .grade{border-color:var(--err);color:var(--err)}
+    .smax{color:var(--muted);font-size:14px}
+    .serr{grid-column:2 / -1;color:var(--err);font-size:14px;font-weight:700}
+    .serr.note{color:var(--muted);font-weight:400}
+    .savebar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:40;box-shadow:0 -4px 14px rgba(0,0,0,.05)}
+    .savebar .btn{min-width:180px;font-size:18px;min-height:54px}
+    #changesInfo{font-size:15px;color:var(--muted)}
+
+    /* ===== الرسائل والتحميل ===== */
+    .toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);width:min(92vw,560px);border-radius:12px;padding:14px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;z-index:60;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+    .toast.ok{background:var(--ok-bg);color:var(--ok);border:1px solid #b9dfc8}
+    .toast.err{background:var(--err-bg);color:var(--err);border:1px solid #f3b8b2}
+    .toast.info{background:#fff;color:var(--text);border:1px solid var(--line)}
+    .toast .x{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:inherit}
+    .loading{position:fixed;inset:0;background:rgba(255,255,255,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:70;font-weight:700}
+    .spinner{width:44px;height:44px;border:5px solid var(--primary-l);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ===== التقارير ===== */
+    .report-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+    .report-title h2{margin:0;font-size:21px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+    @media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+    .stat{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;background:#fff}
+    .stat b{display:block;font-size:24px}
+    .stat.low b{color:var(--low)} .stat.late b{color:var(--late)}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-bottom:10px}
+    .legend span{display:inline-flex;align-items:center;gap:6px}
+    .legend i{width:16px;height:16px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
+    .table-wrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px;background:#fff}
+    table.rep{border-collapse:separate;border-spacing:0;width:100%;font-size:15px}
+    table.rep th,table.rep td{border-bottom:1px solid var(--line);border-left:1px solid var(--line);padding:8px 10px;text-align:center;white-space:nowrap;background:#fff}
+    table.rep thead{position:sticky;top:0;z-index:3}
+    table.rep thead th{background:var(--primary);color:#fff;font-weight:700;vertical-align:middle}
+    table.rep thead tr.sub th{background:var(--primary-d);font-size:14px}
+    table.rep thead th.grp-final{background:#1f4d44}
+    table.rep td.fin{background:#f3f7f6}
+    table.rep thead th small{display:block;font-weight:400;opacity:.85}
+    table.rep th.it{white-space:normal;min-width:80px;font-size:13px;line-height:1.35}
+    table.rep .sticky-name{position:sticky;right:0;z-index:1;text-align:right;min-width:170px}
+    table.rep thead th.sticky-name{z-index:4}
+    table.rep td small{color:var(--muted);font-weight:400}
+    .print-note{display:none}
+    table.rep tfoot td{background:var(--primary-l);font-weight:700}
+    table.rep tr.r-low td{background:var(--low-bg)}
+    table.rep tr.r-late td{background:var(--late-bg)}
+    table.rep td.strong{font-weight:800}
+    .stu-link{color:var(--primary-d);font-weight:700;text-decoration:none;border-bottom:1px dashed var(--primary)}
+    .badge{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;margin-right:6px}
+    .badge.low{background:var(--low);color:#fff}
+    .badge.late{background:#e9a23b;color:#fff}
+
+    /* تقرير الطالب */
+    .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 20px;margin:12px 0}
+    .info-grid div{border-bottom:1px dotted var(--line);padding:4px 0}
+    .status{border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:700}
+    .status.low{background:var(--low-bg);color:var(--low)}
+    .status.late{background:var(--late-bg);color:var(--late)}
+    .status.good{background:var(--ok-bg);color:var(--ok)}
+    table.simple{border-collapse:collapse;width:100%;margin:8px 0 14px;font-size:15px}
+    table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px;text-align:center}
+    table.simple th{background:var(--primary-l)}
+    table.simple td.lowcell{color:var(--low);font-weight:800}
+    .totals{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+    .totals div{border:1px solid var(--line);border-radius:10px;padding:8px 16px;background:#fff}
+    .sign{display:flex;justify-content:space-between;margin-top:36px;gap:20px}
+    .sign div{flex:1;border-top:1px solid var(--text);padding-top:6px;text-align:center;font-size:14px}
+    h3{margin:16px 0 4px;font-size:18px}
+
+    /* ===== الطباعة ===== */
+    @media print{
+      body{background:#fff;font-size:11pt}
+      .no-print,.app-header,.classbar,.tabs,.savebar,.toast,.loading,#view-home,#tab-rasd,#warnings{display:none !important}
+      main{max-width:none;padding:0}
+      .card,.report{border:none;padding:0;margin:0}
+      .table-wrap{overflow:visible;max-height:none;border:none}
+      table.rep th,table.rep td{position:static !important;padding:3px 4px}
+      table.rep{font-size:8.5pt}
+      table.rep thead{position:static}
+      table.rep thead th,table.rep thead tr.sub th,table.rep thead th.grp-final{color:#000;background:#dfe9e6}
+      table.rep .it-col{display:none}
+      .print-note{display:block;font-size:9pt;color:#555;margin-top:6px}
+      table.simple{font-size:10pt}
+      .stats{grid-template-columns:repeat(4,1fr)}
+      .stu-link{color:#000;border:none}
+      thead{display:table-header-group}
+      tr{break-inside:avoid}
+      *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>رصد درجات الرياضيات</h1>
+  <a id="sheetLink" class="sheet-link" href="#" target="_blank" rel="noopener">فتح ملف الجدول</a>
+</header>
+
+<!-- شريط الفصل وتبويباته (يظهر بعد اختيار فصل) -->
+<div id="classHeader" hidden>
+  <div class="classbar">
+    <button class="btn small" id="backBtn">→ الصفوف</button>
+    <div class="crumb"><span id="crumbGrade"></span><strong id="crumbClass"></strong></div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="rasd">الرصد</button>
+    <button class="tab" data-tab="reports">التقارير</button>
+  </nav>
+</div>
+
+<main>
+  <div id="warnings" class="warn-box" hidden></div>
+
+  <!-- ===== الصفحة الأولى ===== -->
+  <section id="view-home">
+    <div class="home-title">اختر الصف ثم الفصل</div>
+    <div id="gradeGrid" class="grade-grid"></div>
+  </section>
+
+  <!-- ===== صفحة الفصل ===== -->
+  <section id="view-class" hidden>
+    <div id="tab-rasd">
+      <div class="card">
+        <div class="grid2">
+          <div><label for="rUnit">الوحدة</label><select id="rUnit"></select></div>
+          <div><label for="rType">نوع التقييم</label><select id="rType"></select></div>
+        </div>
+      </div>
+      <div id="rasdArea"></div>
+    </div>
+
+    <div id="tab-reports" hidden>
+      <div id="classReport"></div>
+      <div id="studentReport" hidden></div>
+    </div>
+  </section>
+</main>
+
+<div class="savebar" id="saveBar" hidden>
+  <span id="changesInfo">لا توجد تغييرات</span>
+  <button class="btn primary" id="saveBtn" disabled>حفظ الدرجات</button>
+</div>
+
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="loading" class="loading" hidden><div class="spinner"></div><span id="loadingText">جارٍ التحميل…</span></div>
+
+<script>
+  const $ = function (id) { return document.getElementById(id); };
+  const S = {
+    init: null, grade: '', cls: '', tab: 'rasd',
+    sel: { unit: '', type: '' }, rasd: null, report: null, req: 0, saving: false
+  };
+
+  const CAP_ICON = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/><path d="M22 9v6"/></svg>';
+  const CHEV = '<svg class="chev" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+
+  /* ================= أدوات ================= */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  // يحوّل الأرقام العربية (٠١٢٣) إلى (0123) والفاصلة العشرية إلى نقطة
+  function norm(s) {
+    return String(s == null ? '' : s)
+      .replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); })
+      .replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); })
+      .replace(/[٫,]/g, '.')
+      .trim();
+  }
+  function fmt(n) {
+    if (n === null || n === undefined || n === '') return '—';
+    return String(Math.round(n * 10) / 10);
+  }
+  function call(fn) {
+    const args = [].slice.call(arguments, 1);
+    return new Promise(function (res, rej) {
+      const r = google.script.run.withSuccessHandler(res).withFailureHandler(rej);
+      r[fn].apply(r, args);
+    });
+  }
+  function errMsg(e) {
+    return String((e && e.message) ? e.message : e).replace(/^(Exception|Error):\s*/, '');
+  }
+  let toastTimer;
+  function toast(msg, type, sticky) {
+    const t = $('toast');
+    t.className = 'toast ' + (type || 'ok');
+    t.innerHTML = '<span>' + esc(msg) + '</span><button class="x" aria-label="إغلاق">×</button>';
+    t.hidden = false;
+    t.querySelector('.x').onclick = function () { t.hidden = true; };
+    clearTimeout(toastTimer);
+    if (!sticky) toastTimer = setTimeout(function () { t.hidden = true; }, 5000);
+  }
+  function loading(show, text) {
+    $('loadingText').textContent = text || 'جارٍ التحميل…';
+    $('loading').hidden = !show;
+  }
+  function fillSelect(sel, values, placeholder, labelFn) {
+    sel.innerHTML = '<option value="">' + esc(placeholder) + '</option>' +
+      values.map(function (v) {
+        return '<option value="' + esc(v) + '">' + esc(labelFn ? labelFn(v) : v) + '</option>';
+      }).join('');
+  }
+  // يضيف رقم الفترة لاسم الوحدة إذا كانت كل عناصرها في فترة واحدة
+  function unitLabel(u) {
+    const its = S.init.items.filter(function (i) { return i.unit === u; });
+    const ps = its.map(function (i) { return i.period; }).filter(function (p, k, a) { return p && a.indexOf(p) === k; });
+    return ps.length === 1 ? u + ' — الفترة ' + ps[0] : u;
+  }
+  function showWarnings(list) {
+    const w = $('warnings');
+    if (!list || !list.length) { w.hidden = true; return; }
+    w.innerHTML = '<b>تنبيه في ورقة الإعدادات:</b><ul>' +
+      list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    w.hidden = false;
+  }
+
+  /* ================= البدء ================= */
+  window.addEventListener('load', init);
+  window.addEventListener('beforeunload', function (e) {
+    if (dirtyCount() > 0) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  function init() {
+    document.querySelectorAll('.tab').forEach(function (b) {
+      b.onclick = function () { switchTab(b.dataset.tab); };
+    });
+    ['rUnit', 'rType'].forEach(function (id) { $(id).addEventListener('change', onSelChange); });
+    $('saveBtn').onclick = save;
+    $('backBtn').onclick = goHome;
+
+    loading(true, 'جارٍ تجهيز البيانات…');
+    call('getInitData').then(function (d) {
+      S.init = d;
+      $('sheetLink').href = d.sheetUrl;
+      showWarnings(d.warnings);
+      fillSelect($('rUnit'), d.units, 'اختر الوحدة', unitLabel);
+      fillSelect($('rType'), [], 'اختر الوحدة أولاً');
+      renderHome();
+    }).catch(function (e) {
+      toast('تعذّر تحميل البيانات: ' + errMsg(e), 'err', true);
+    }).finally(function () { loading(false); });
+  }
+
+  /* ================= الصفحة الأولى ================= */
+  function renderHome() {
+    const groups = S.init.groups || [];
+    if (!groups.length) {
+      $('gradeGrid').innerHTML = '<div class="card empty">لا توجد فصول بعد. أضف الصفوف والفصول في ورقة «الإعدادات» (العمودان K و L).</div>';
+      return;
+    }
+    let h = '';
+    groups.forEach(function (g, gi) {
+      const cls = 'grade-card' + (g.other ? ' other' : (gi % 2 ? ' c1' : ''));
+      h += '<div class="' + cls + '" data-g="' + gi + '">' +
+        '<button class="grade-btn" aria-expanded="false">' +
+        '<span class="grade-icon">' + CAP_ICON + '</span>' +
+        '<span><span class="grade-name">' + esc(g.grade) + '</span>' +
+        '<span class="grade-sub">' + g.classes.length + (g.classes.length === 1 ? ' فصل' : ' فصول') + '</span></span>' +
+        CHEV + '</button>' +
+        '<div class="sections" hidden>' +
+        g.classes.map(function (c) {
+          return '<button class="section-btn" data-cls="' + esc(c) + '"><span>' + esc(c) + '</span><span>←</span></button>';
+        }).join('') +
+        '</div></div>';
+    });
+    $('gradeGrid').innerHTML = h;
+
+    document.querySelectorAll('.grade-card').forEach(function (card) {
+      const btn = card.querySelector('.grade-btn'), list = card.querySelector('.sections');
+      btn.onclick = function () {
+        const open = list.hidden;
+        list.hidden = !open;
+        card.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', String(open));
+      };
+      const g = groups[Number(card.dataset.g)];
+      card.querySelectorAll('.section-btn').forEach(function (sb) {
+        sb.onclick = function () { openClass(g.grade, sb.dataset.cls); };
+      });
+    });
+  }
+
+  function openClass(grade, cls) {
+    S.grade = grade;
+    S.cls = cls;
+    S.rasd = null;
+    S.report = null;
+    $('crumbGrade').textContent = grade;
+    $('crumbClass').textContent = cls;
+    $('view-home').hidden = true;
+    $('view-class').hidden = false;
+    $('classHeader').hidden = false;
+    $('classReport').innerHTML = '';
+    $('studentReport').innerHTML = '';
+    switchTab('rasd');
+    window.scrollTo(0, 0);
+    maybeLoad();
+  }
+
+  function goHome() {
+    if (dirtyCount() > 0 && !confirm('لديك درجات لم تُحفظ بعد. هل تريد تركها دون حفظ؟')) return;
+    S.rasd = null;
+    S.cls = '';
+    $('view-class').hidden = true;
+    $('classHeader').hidden = true;
+    $('saveBar').hidden = true;
+    $('view-home').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function switchTab(t) {
+    S.tab = t;
+    document.querySelectorAll('.tab').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === t); });
+    $('tab-rasd').hidden = t !== 'rasd';
+    $('tab-reports').hidden = t !== 'reports';
+    $('saveBar').hidden = t !== 'rasd' || !S.rasd || !S.rasd.students.length;
+    if (t === 'reports') {
+      if (dirtyCount() > 0) {
+        toast('تنبيه: لديك درجات لم تُحفظ في شاشة الرصد، ولن تظهر في التقرير حتى تحفظها.', 'info', true);
+      }
+      if (!S.report || S.report.className !== S.cls) loadReport();
+    } else if (!S.rasd) {
+      maybeLoad();
+    }
+  }
+
+  /* ================= الرصد ================= */
+  function saveSel() { S.sel = { unit: $('rUnit').value, type: $('rType').value }; }
+  function restoreSel() {
+    $('rUnit').value = S.sel.unit;
+    fillTypes(S.sel.unit);
+    $('rType').value = S.sel.type;
+  }
+  function fillTypes(unit) {
+    const types = unit ? S.init.items.filter(function (i) { return i.unit === unit; }).map(function (i) { return i.type; }) : [];
+    fillSelect($('rType'), types, unit ? 'اختر نوع التقييم' : 'اختر الوحدة أولاً');
+  }
+  function onSelChange(e) {
+    if (dirtyCount() > 0 && !confirm('لديك درجات لم تُحفظ بعد. هل تريد تركها دون حفظ؟')) { restoreSel(); return; }
+    if (e.target.id === 'rUnit') fillTypes($('rUnit').value);
+    saveSel();
+    maybeLoad();
+  }
+
+  function renderRasdEmpty() {
+    $('rasdArea').innerHTML = '<div class="card empty">اختر الوحدة ثم نوع التقييم لعرض قائمة الطلاب.</div>';
+    $('saveBar').hidden = true;
+  }
+
+  function maybeLoad() {
+    const cls = S.cls, unit = S.sel.unit, type = S.sel.type;
+    if (!(cls && unit && type)) { S.rasd = null; renderRasdEmpty(); return; }
+    const token = ++S.req;
+    loading(true, 'جارٍ تحميل الطلاب…');
+    call('getGrades', cls, unit, type).then(function (d) {
+      if (token !== S.req) return;
+      S.rasd = { cls: cls, unit: unit, type: type, item: d.item, students: d.students };
+      renderRasd();
+    }).catch(function (e) {
+      if (token !== S.req) return;
+      S.rasd = null;
+      renderRasdEmpty();
+      toast('تعذّر التحميل: ' + errMsg(e), 'err', true);
+    }).finally(function () { if (token === S.req) loading(false); });
+  }
+
+  function renderRasd() {
+    const r = S.rasd, max = r.item.max;
+    if (!r.students.length) {
+      $('rasdArea').innerHTML = '<div class="card empty">لا يوجد طلاب في هذا الفصل بعد.<br>أضف أرقام الطلاب وأسماءهم في ورقة «' +
+        esc(r.cls) + '» داخل ملف الجدول، ثم أعد تحميل الصفحة.</div>';
+      $('saveBar').hidden = true;
+      return;
+    }
+    let h = '<div class="card"><div class="rasd-head"><div><strong>' + esc(r.unit) + ' — ' + esc(r.type) + '</strong>' +
+      '<div class="muted">الفصل: ' + esc(r.cls) + ' · الدرجة الكاملة: <b>' + max + '</b> · عدد الطلاب: ' + r.students.length + '</div></div>' +
+      '<button class="btn small" id="fillMaxBtn">تعبئة الفارغ بالدرجة الكاملة</button></div>' +
+      '<div class="hint">' + (r.item.bestOf
+        ? 'هذا عنصر تحسين: اكتب الدرجة لمن دخل التحسين فقط، واترك الباقين فارغين. في التقارير يُحتسب الأعلى بين «' + esc(r.item.bestOf) + '» والتحسين.'
+        : (max === 1
+          ? 'اكتب 1 إذا أنجز الطالب، و0 إذا لم ينجز، واترك الخانة فارغة إذا لم يُقيَّم بعد.'
+          : 'اترك الخانة فارغة إذا لم تُرصد الدرجة بعد، واكتب 0 إذا لم يسلّم الطالب.')) +
+      '</div><div class="slist">';
+    r.students.forEach(function (s, i) {
+      s.orig = s.value === '' ? '' : String(s.value);
+      h += '<div class="srow" data-i="' + i + '">' +
+        '<span class="snum">' + (i + 1) + '</span>' +
+        '<span class="sname">' + esc(s.name) + '</span>' +
+        '<input class="grade" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" value="' + esc(s.orig) +
+        '" aria-label="درجة ' + esc(s.name) + '">' +
+        '<span class="smax">/ ' + max + '</span>' +
+        '<div class="serr"></div></div>';
+    });
+    h += '</div></div>';
+    $('rasdArea').innerHTML = h;
+
+    const inputs = [].slice.call(document.querySelectorAll('#rasdArea .grade'));
+    inputs.forEach(function (inp, i) {
+      inp.addEventListener('input', updateState);
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (inputs[i + 1]) { inputs[i + 1].focus(); inputs[i + 1].select(); } else { inp.blur(); }
+        }
+      });
+    });
+    $('fillMaxBtn').onclick = fillMax;
+    $('saveBar').hidden = S.tab !== 'rasd';
+    updateState();
+  }
+
+  function check(raw, max) {
+    const v = norm(raw);
+    if (v === '') return { ok: true, val: '' };
+    if (!/^\d+(\.\d+)?$/.test(v)) return { ok: false, msg: 'اكتب رقماً صحيحاً (بدون رموز أو حروف)' };
+    const n = Number(v);
+    if (n > max) return { ok: false, msg: 'أكبر من الدرجة الكاملة (' + max + ')' };
+    return { ok: true, val: n };
+  }
+  function same(a, b) {
+    const x = norm(a), y = norm(b);
+    if (x === y) return true;
+    if (x !== '' && y !== '' && !isNaN(x) && !isNaN(y)) return Number(x) === Number(y);
+    return false;
+  }
+
+  // يحدّث حالة كل صف وزر الحفظ
+  function updateState() {
+    if (!S.rasd) return { changed: 0, bad: 0 };
+    let changed = 0, bad = 0;
+    document.querySelectorAll('#rasdArea .srow').forEach(function (row) {
+      const s = S.rasd.students[row.dataset.i];
+      const inp = row.querySelector('.grade'), err = row.querySelector('.serr');
+      row.classList.remove('changed', 'invalid');
+      err.textContent = ''; err.className = 'serr';
+      if (same(inp.value, s.orig)) {
+        if (s.orig !== '' && isNaN(norm(s.orig))) {
+          err.textContent = 'في الجدول قيمة نصية لا تُحسب في الدرجات';
+          err.className = 'serr note';
+        }
+        return;
+      }
+      changed++;
+      const c = check(inp.value, S.rasd.item.max);
+      if (c.ok) { row.classList.add('changed'); }
+      else { bad++; row.classList.add('invalid'); err.textContent = c.msg; }
+    });
+    $('changesInfo').textContent = changed === 0 ? 'لا توجد تغييرات' :
+      ('تغييرات غير محفوظة: ' + changed + (bad ? ' · يوجد ' + bad + ' خطأ يجب تصحيحه' : ''));
+    $('saveBtn').disabled = S.saving || changed === 0 || bad > 0;
+    return { changed: changed, bad: bad };
+  }
+  function dirtyCount() {
+    if (!S.rasd) return 0;
+    let n = 0;
+    document.querySelectorAll('#rasdArea .srow').forEach(function (row) {
+      const s = S.rasd.students[row.dataset.i];
+      if (!same(row.querySelector('.grade').value, s.orig)) n++;
+    });
+    return n;
+  }
+
+  function fillMax() {
+    const max = S.rasd.item.max;
+    const empties = [].slice.call(document.querySelectorAll('#rasdArea .grade')).filter(function (i) { return norm(i.value) === ''; });
+    if (!empties.length) { toast('لا توجد خانات فارغة.', 'info'); return; }
+    if (!confirm('سيتم وضع الدرجة الكاملة (' + max + ') لـ ' + empties.length +
+      ' طالب خاناتهم فارغة. يمكنك تعديل أي درجة بعدها، ولن يُحفظ شيء حتى تضغط «حفظ الدرجات». متابعة؟')) return;
+    empties.forEach(function (i) { i.value = String(max); });
+    updateState();
+  }
+
+  function save() {
+    const r = S.rasd;
+    if (!r) return;
+    const changes = [];
+    let bad = 0;
+    document.querySelectorAll('#rasdArea .srow').forEach(function (row) {
+      const s = r.students[row.dataset.i];
+      const inp = row.querySelector('.grade');
+      if (same(inp.value, s.orig)) return;
+      const c = check(inp.value, r.item.max);
+      if (!c.ok) { bad++; return; }
+      changes.push({ id: s.id, value: c.val === '' ? '' : String(c.val), idx: Number(row.dataset.i) });
+    });
+    if (bad) { toast('صحّح الدرجات المظللة بالأحمر أولاً.', 'err', true); return; }
+    if (!changes.length) return;
+
+    S.saving = true;
+    $('saveBtn').textContent = 'جارٍ الحفظ…';
+    updateState();
+    const payload = changes.map(function (c) { return { id: c.id, value: c.value }; });
+    call('saveGrades', r.cls, r.unit, r.type, payload).then(function (res) {
+      S.report = null; // التقرير يُعاد حسابه بعد أي حفظ
+      if (S.rasd !== r) return;
+      const rows = document.querySelectorAll('#rasdArea .srow');
+      changes.forEach(function (c) {
+        const s = r.students[c.idx];
+        const inp = rows[c.idx].querySelector('.grade');
+        s.orig = c.value;
+        s.value = c.value === '' ? '' : Number(c.value);
+        if (same(inp.value, c.value)) inp.value = c.value;
+      });
+      toast('✓ تم حفظ ' + res.saved + ' درجة في الجدول بنجاح (الساعة ' + res.time + ').', 'ok');
+    }).catch(function (e) {
+      toast('✗ لم يتم الحفظ: ' + errMsg(e) + ' — درجاتك ما زالت في الشاشة، حاول مرة أخرى.', 'err', true);
+    }).finally(function () {
+      S.saving = false;
+      $('saveBtn').textContent = 'حفظ الدرجات';
+      updateState();
+    });
+  }
+
+  /* ================= التقارير ================= */
+  function loadReport() {
+    const cls = S.cls;
+    if (!cls) return;
+    loading(true, 'جارٍ إعداد التقرير…');
+    call('getClassReport', cls).then(function (d) {
+      if (S.cls !== cls) return;
+      S.report = d;
+      showWarnings(d.warnings);
+      renderClassReport();
+    }).catch(function (e) {
+      toast('تعذّر إعداد التقرير: ' + errMsg(e), 'err', true);
+    }).finally(function () { loading(false); });
+  }
+
+  function itemsMap() {
+    const m = {};
+    S.report.items.forEach(function (i) { m[i.key] = i; });
+    return m;
+  }
+
+  function fmtOf(v, of, nominal) {
+    if (v === null || v === undefined) return '—';
+    return fmt(v) + (of && of < nominal ? '<small> / ' + fmt(of) + '</small>' : '');
+  }
+  function avgArr(arr) {
+    const a = arr.filter(function (x) { return x !== null && x !== undefined; });
+    return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null;
+  }
+
+  function renderClassReport() {
+    const d = S.report, st = d.stats, im = itemsMap(), W = d.weights;
+    const PT = W.task + W.part + W.exam, TT = W.task + W.part;
+    const active = d.activeKeys.map(function (k) { return im[k]; });
+    $('studentReport').hidden = true;
+    $('classReport').hidden = false;
+
+    let h = '<div class="card report"><div class="report-title"><div><h2>تقرير الفصل: ' + esc(d.className) + '</h2>' +
+      '<div class="muted">' + esc(S.grade) + ' · مادة الرياضيات · تاريخ التقرير: ' + esc(d.date) + '</div></div>' +
+      '<div class="row-actions no-print"><button class="btn small" id="refreshRep">تحديث</button>' +
+      '<button class="btn small primary" onclick="printReport(\'landscape\')">طباعة تقرير الفصل</button></div></div>';
+
+    h += '<div class="stats">' +
+      '<div class="stat"><span class="muted">عدد الطلاب</span><b>' + st.count + '</b></div>' +
+      '<div class="stat"><span class="muted">متوسط نسبة الفصل</span><b>' + (st.avgPct === null ? '—' : fmt(st.avgPct) + '%') + '</b></div>' +
+      '<div class="stat low"><span class="muted">أقل من ' + d.threshold + '%</span><b>' + st.lowCount + '</b></div>' +
+      '<div class="stat late"><span class="muted">لديهم درجات غير مرصودة</span><b>' + st.lateCount + '</b></div></div>';
+
+    h += '<div class="legend"><span><i style="background:var(--low-bg)"></i>نسبة أقل من ' + d.threshold + '%</span>' +
+      '<span><i style="background:var(--late-bg)"></i>درجات غير مرصودة (متأخر)</span>' +
+      '<span class="no-print muted">اضغط اسم الطالب لعرض تقريره.</span></div>';
+
+    if (!d.students.length) {
+      h += '<div class="empty">لا يوجد طلاب في هذا الفصل بعد. أضف أرقامهم وأسماءهم في ورقة «' + esc(d.className) + '».</div></div>';
+    } else if (!d.periods.length) {
+      h += '<div class="empty">لم تُرصد أي درجات لهذا الفصل بعد.</div></div>';
+    } else {
+      const th = function (t, of, cls) { return '<th' + (cls ? ' class="' + cls + '"' : '') + '>' + t + '<small>من ' + of + '</small></th>'; };
+      h += '<div class="table-wrap"><table class="rep"><thead><tr><th class="sticky-name" rowspan="2">الطالب</th>';
+      d.periods.forEach(function (p) { h += '<th colspan="4">الفترة ' + p + '</th>'; });
+      h += '<th colspan="3" class="grp-final">المعدل النهائي</th><th rowspan="2">النسبة</th><th rowspan="2">غير مرصود</th>';
+      active.forEach(function (it) {
+        h += '<th rowspan="2" class="it it-col">' + esc(it.unit) + '<br>' + esc(it.type) + '<small>/ ' + it.max + '</small></th>';
+      });
+      h += '</tr><tr class="sub">';
+      d.periods.forEach(function () {
+        h += th('المهام', W.task) + th('المشاركة', W.part) + th('الاختبار', W.exam) + th('المجموع', PT);
+      });
+      h += th('الاختبارات', W.exam, 'grp-final') + th('أدوات التقويم', TT, 'grp-final') + th('المجموع', PT, 'grp-final');
+      h += '</tr></thead><tbody>';
+
+      d.students.forEach(function (s, i) {
+        const cls = s.low ? 'r-low' : (s.late ? 'r-late' : '');
+        h += '<tr class="' + cls + '"><td class="sticky-name">' + (i + 1) + '. ' +
+          '<a href="#" class="stu-link" data-i="' + i + '">' + esc(s.name) + '</a>' +
+          (s.low ? '<span class="badge low">منخفض</span>' : '') +
+          (s.late ? '<span class="badge late">ناقص ' + s.missing.length + '</span>' : '') + '</td>';
+        d.periods.forEach(function (p) {
+          const x = s.periods[p];
+          h += '<td>' + fmt(x.tasks) + '</td><td>' + fmt(x.part) + '</td><td>' + fmt(x.exam) + '</td>' +
+            '<td class="strong">' + fmtOf(x.total, x.totalOf, PT) + '</td>';
+        });
+        const f = s.final;
+        h += '<td class="fin">' + fmt(f.exam) + '</td>' +
+          '<td class="fin">' + fmtOf(f.tools, f.toolsOf, TT) + '</td>' +
+          '<td class="fin strong">' + fmtOf(f.total, f.totalOf, PT) + '</td>';
+        h += '<td class="strong">' + (s.pct === null ? '—' : fmt(s.pct) + '%') + '</td>';
+        h += '<td>' + (s.missing.length || '') + '</td>';
+        active.forEach(function (it) {
+          const v = s.grades[it.key];
+          h += '<td class="it-col">' + (v === undefined ? '—' : fmt(v)) + '</td>';
+        });
+        h += '</tr>';
+      });
+
+      h += '</tbody><tfoot><tr><td class="sticky-name">متوسط الفصل</td>';
+      d.periods.forEach(function (p) {
+        const a = st.periodAvg[p];
+        h += '<td>' + fmt(a.tasks) + '</td><td>' + fmt(a.part) + '</td><td>' + fmt(a.exam) + '</td><td>' + fmt(a.total) + '</td>';
+      });
+      h += '<td>' + fmt(st.finalAvg.exam) + '</td><td>' + fmt(st.finalAvg.tools) + '</td><td>' + fmt(st.finalAvg.total) + '</td>';
+      h += '<td>' + (st.avgPct === null ? '—' : fmt(st.avgPct) + '%') + '</td><td></td>';
+      active.forEach(function (it) { h += '<td class="it-col">' + fmt(st.itemAvg[it.key]) + '</td>'; });
+      h += '</tr></tfoot></table></div>' +
+        '<div class="muted no-print" style="margin-top:8px">الرقم الصغير بجانب المجموع (مثل «/ 40») يعني أن بعض بنود الفترة لم تُرصد بعد، فالمجموع محسوب من الدرجة المذكورة.</div>' +
+        '<div class="print-note">تفاصيل العناصر تظهر في تقرير كل طالب.</div></div>';
+    }
+
+    $('classReport').innerHTML = h;
+    $('refreshRep').onclick = loadReport;
+    document.querySelectorAll('#classReport .stu-link').forEach(function (a) {
+      a.onclick = function (e) { e.preventDefault(); showStudent(Number(a.dataset.i)); };
+    });
+  }
+
+  function showStudent(i) {
+    const d = S.report, s = d.students[i], im = itemsMap(), W = d.weights, st = d.stats;
+    const PT = W.task + W.part + W.exam, TT = W.task + W.part;
+    const f = s.final;
+
+    let h = '<div class="card report"><div class="row-actions no-print" style="margin-bottom:12px">' +
+      '<button class="btn small" id="backRep">→ رجوع لتقرير الفصل</button>' +
+      '<button class="btn small primary" onclick="printReport(\'portrait\')">طباعة تقرير الطالب</button></div>';
+    h += '<h2 style="margin:0">تقرير أداء طالب — مادة الرياضيات</h2>';
+    h += '<div class="info-grid"><div><b>الاسم:</b> ' + esc(s.name) + '</div><div><b>رقم الطالب:</b> ' + esc(s.id) + '</div>' +
+      '<div><b>الفصل:</b> ' + esc(S.grade) + ' — ' + esc(d.className) + '</div><div><b>تاريخ التقرير:</b> ' + esc(d.date) + '</div></div>';
+
+    if (s.low) h += '<div class="status low">نسبة الطالب (' + fmt(s.pct) + '%) أقل من الحد المطلوب (' + d.threshold + '%) ويحتاج إلى متابعة.</div>';
+    if (s.late) {
+      h += '<div class="status late">توجد ' + s.missing.length + ' درجات غير مرصودة: ' +
+        s.missing.map(function (k) { return esc(im[k].unit + ' - ' + im[k].type); }).join('، ') + '</div>';
+    }
+    if (!s.low && !s.late && s.pct !== null) h += '<div class="status good">أداء الطالب ضمن المستوى المطلوب.</div>';
+
+    h += '<div class="totals"><div><b>المجموع النهائي:</b> ' + (f.total === null ? '—' : fmt(f.total) + ' من ' + fmt(f.totalOf)) + '</div>' +
+      '<div><b>النسبة:</b> ' + (s.pct === null ? '—' : fmt(s.pct) + '%') + '</div></div>';
+
+    // ملخص الفترات
+    const P = d.allPeriods;
+    h += '<h3>ملخص الفترات</h3><table class="simple"><thead><tr><th>البند</th>';
+    P.forEach(function (p) { h += '<th>الفترة ' + p + '</th>'; });
+    h += '<th>المعدل</th></tr></thead><tbody>';
+    const row = function (label, of, key, finalVal, bold) {
+      let r = '<tr' + (bold ? ' style="font-weight:800"' : '') + '><td style="text-align:right">' + label + ' <small class="muted">(من ' + of + ')</small></td>';
+      P.forEach(function (p) {
+        const x = s.periods[p];
+        const v = x[key];
+        const vOf = key === 'total' ? x.totalOf : (key === 'tools' ? x.toolsOf : of);
+        r += '<td>' + fmtOf(v, vOf, of) + '</td>';
+      });
+      return r + '<td>' + fmt(finalVal) + '</td></tr>';
+    };
+    h += row('الاختبار الفتري', W.exam, 'exam', f.exam);
+    h += row('أدوات التقويم المتنوعة', TT, 'tools', f.tools, true);
+    h += row('— المهام الأدائية', W.task, 'tasks', avgArr(P.map(function (p) { return s.periods[p].tasks; })));
+    h += row('— المشاركة', W.part, 'part', avgArr(P.map(function (p) { return s.periods[p].part; })));
+    h += row('المجموع', PT, 'total', f.total, true);
+    h += '</tbody></table>';
+
+    // درجات الوحدات
+    if (d.taskUnits.length) {
+      const types = [];
+      d.taskUnits.forEach(function (u) { u.types.forEach(function (t) { if (types.indexOf(t) < 0) types.push(t); }); });
+      h += '<h3>المهام الأدائية لكل وحدة</h3><table class="simple"><thead><tr><th>الوحدة</th><th>الفترة</th>';
+      types.forEach(function (t) { h += '<th>' + esc(t) + '</th>'; });
+      h += '<th>درجة الوحدة<br><small>من ' + W.task + '</small></th><th>متوسط الفصل</th></tr></thead><tbody>';
+      d.taskUnits.forEach(function (u) {
+        h += '<tr><td><b>' + esc(u.unit) + '</b></td><td>' + u.period + '</td>';
+        types.forEach(function (t) {
+          if (u.types.indexOf(t) < 0) { h += '<td></td>'; return; }
+          const v = s.grades[u.unit + ' | ' + t];
+          h += '<td>' + (v === undefined ? '—' : fmt(v)) + '</td>';
+        });
+        const sc = s.units[u.unit];
+        const low = sc !== null && sc / W.task * 100 < d.threshold;
+        h += '<td class="' + (low ? 'lowcell' : '') + '"><b>' + fmt(sc) + '</b></td><td>' + fmt(st.unitAvg[u.unit]) + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+
+    // المشاركة والاختبارات
+    const others = d.items.filter(function (it) { return it.kind && it.kind !== 'مهام أدائية'; });
+    if (others.length) {
+      h += '<h3>المشاركة والاختبارات</h3><table class="simple"><thead><tr><th>البند</th><th>الدرجة</th><th>من</th><th>متوسط الفصل</th></tr></thead><tbody>';
+      others.forEach(function (it) {
+        const v = s.grades[it.key];
+        const low = v !== undefined && (v / it.max * 100) < d.threshold;
+        h += '<tr><td style="text-align:right">' + esc(it.unit) + ' — ' + esc(it.type) +
+          (it.bestOf ? '<br><small class="muted">يُحتسب الأعلى مع «' + esc(it.bestOf) + '»</small>' : '') + '</td>' +
+          '<td class="' + (low ? 'lowcell' : '') + '">' + (v === undefined ? '—' : fmt(v)) + '</td>' +
+          '<td>' + it.max + '</td><td>' + fmt(st.itemAvg[it.key]) + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+
+    h += '<div class="muted">«—» تعني أن الدرجة لم تُرصد بعد. الرقم الصغير (مثل «/ 40») يعني أن المجموع محسوب مما رُصد حتى الآن.</div>';
+    h += '<div class="sign"><div>توقيع المعلم</div><div>توقيع ولي الأمر</div></div></div>';
+
+    $('studentReport').innerHTML = h;
+    $('classReport').hidden = true;
+    $('studentReport').hidden = false;
+    $('backRep').onclick = function () {
+      $('studentReport').hidden = true;
+      $('classReport').hidden = false;
+    };
+    window.scrollTo(0, 0);
+  }
+
+  function printReport(orientation) {
+    $('pageSize').textContent = '@page { size: A4 ' + orientation + '; margin: 10mm; }';
+    window.print();
+  }
+</script>
+</body>
+</html>
